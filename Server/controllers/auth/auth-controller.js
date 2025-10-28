@@ -77,7 +77,7 @@ const loginUser = async (req, res) => {
 
     // 4. Send response
     res
-      .cookie("token", token, { httpOnly: true, secure: false })
+      .cookie("token", token, { httpOnly: true, secure: true })
       .status(200)
       .json({
         success: true,
