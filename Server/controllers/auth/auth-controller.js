@@ -76,19 +76,30 @@ const loginUser = async (req, res) => {
     );
 
     // 4. Send response
-    res
-      .cookie("token", token, { httpOnly: true, secure: true })
-      .status(200)
-      .json({
-        success: true,
-        message: "Logged in successfully",
-        user: {
+    // res
+    //   .cookie("token", token, { httpOnly: true, secure: true })
+    //   .status(200)
+    //   .json({
+    //     success: true,
+    //     message: "Logged in successfully",
+    //     user: {
+    //       id: existingUser._id,
+    //       email: existingUser.email,
+    //       role: existingUser.role,
+    //          userName:existingUser.userName
+    //     },
+    //   });
+    res.status(200).json({
+      success:true,
+      message:"logged in success",
+      token,
+       user: {
           id: existingUser._id,
           email: existingUser.email,
           role: existingUser.role,
              userName:existingUser.userName
         },
-      });
+    })
   } catch (error) {
     console.error("Login Error:", error);
     res.status(500).json({
@@ -121,9 +132,39 @@ const logout = (req, res) => {
   }
 };
 
+// ///auth middleware
+// const authMiddleware = async (req, res, next) => {
+//   const token = req.cookies?.token;
+
+//   if (!token) {
+//     return res.status(401).json({
+//       success: false,
+//       message: "Unauthorized user! No token provided.",
+//     });
+//   }
+
+//   try {
+//     const decoded = jwt.verify(token,'CLIENT_SECRET_KEY');
+//     req.user = decoded;
+//     next();
+//   } catch (error) {
+//     if (error.name === "TokenExpiredError") {
+//       return res.status(401).json({
+//         success: false,
+//         message: "Session expired. Please log in again.",
+//       });
+//     }
+//     res.status(401).json({
+//       success: false,
+//       message: "Unauthorized user! Invalid token.",
+//     });
+//   }
+// };
+
 ///auth middleware
 const authMiddleware = async (req, res, next) => {
-  const token = req.cookies?.token;
+  const authHeader=req.headers["authorization"]
+  const token = authHeader && authHeader.split(" ")[1]
 
   if (!token) {
     return res.status(401).json({
@@ -149,8 +190,6 @@ const authMiddleware = async (req, res, next) => {
     });
   }
 };
-
-
 
 
 module.exports = { register,loginUser,logout,authMiddleware };

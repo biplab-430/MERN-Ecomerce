@@ -3,7 +3,7 @@ import { Button } from '../ui/button'
 import { FaBars } from "react-icons/fa";
 import { AiOutlineLogout } from "react-icons/ai";
 import { useDispatch } from 'react-redux';
-import { logOutUser } from '@/store/auth-slice';
+import { logOutUser, resetTokenCredentials } from '@/store/auth-slice';
 import {
   AlertDialog,
   AlertDialogTrigger,
@@ -23,8 +23,9 @@ function AdminHeader({ setOpen }) {
     const navigate = useNavigate()
 
   const handleLogOut = () => {
-    dispatch(logOutUser())
-      navigate('/auth/login')
+  dispatch(resetTokenCredentials())
+     sessionStorage.clear()
+     navigate('/auth/login')
   }
 
   return (

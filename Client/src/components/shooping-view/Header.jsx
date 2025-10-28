@@ -23,7 +23,7 @@ import {
   DropdownMenuItem,
 } from '../ui/dropdown-menu'
 import { Avatar, AvatarFallback } from '../ui/avatar'
-import { logOutUser } from '@/store/auth-slice'
+import { logOutUser, resetTokenCredentials } from '@/store/auth-slice'
 import UserCartwrapper from './Cart-wrapper'
 import { getCartItems } from '@/store/Cart-slice'
 import { Label } from '../ui/label'
@@ -73,7 +73,9 @@ function HeaderRightContent() {
 
   
   const handleLogout = () => {
-    dispatch(logOutUser())
+    // dispatch(logOutUser())
+    dispatch(resetTokenCredentials())
+    sessionStorage.clear()
     navigate('/auth/login')
   }
 

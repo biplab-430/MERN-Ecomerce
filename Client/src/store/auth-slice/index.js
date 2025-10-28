@@ -7,7 +7,8 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 const initialState = {
   isAuthenticated: false,
-  isLoading: true,    
+  isLoading: true, 
+  token:null,   
   user: null,
   error: null,
 };
@@ -63,27 +64,46 @@ export const logOutUser = createAsyncThunk(
   }
 );
 
-// Check authentication
+// Check authentication when have cookie
+// export const checkAuth = createAsyncThunk(
+//   '/auth/checkauth',
+//   async (_, { rejectWithValue }) => {
+//     try {
+//       const response = await axios.get(
+//         `${API_URL}/api/auth/check-auth`,
+//         {
+//           withCredentials: true,
+//           headers: {
+//             'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+//             Expires: '0'
+//           }
+//         }
+//       );
+//       return response.data;
+//     } catch (error) {
+//       return rejectWithValue(error.response?.data || error.message);
+//     }
+//   }
+// );
 export const checkAuth = createAsyncThunk(
   '/auth/checkauth',
-  async (_, { rejectWithValue }) => {
+  async (token, { rejectWithValue }) => {
     try {
-      const response = await axios.get(
-        `${API_URL}/api/auth/check-auth`,
-        {
-          withCredentials: true,
-          headers: {
-            'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
-            Expires: '0'
-          }
+      const response = await axios.get(`${API_URL}/api/auth/check-auth`, {
+        withCredentials: true,
+        headers: {
+          Authorization:`bearer ${token}`,
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+          Expires: '0'
         }
-      );
+      });
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
     }
   }
 );
+
 
 const authSlice = createSlice({
   name: 'user',
@@ -97,6 +117,11 @@ const authSlice = createSlice({
       state.isAuthenticated = false;
       state.user = null;
     },
+    resetTokenCredentials:(state)=>{
+      state.isAuthenticated=false;
+      state.user=null;
+      state.token=null
+    }
   },
   extraReducers: (builder) => {
     // Register
@@ -120,11 +145,14 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.isAuthenticated = true;
         state.user = action.payload?.user || null;
+        state.token=action.payload?.token
+        sessionStorage.setItem('token',JSON.stringify(action.payload?.token))
       })
       .addCase(loginUser.rejected, (state) => {
         state.isLoading = false;
         state.isAuthenticated = false;
         state.user = null;
+         state.token=null
       });
 
     // Check Auth
@@ -164,5 +192,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { setUser, logout } = authSlice.actions;
+export const { setUser, logout,resetTokenCredentials } = authSlice.actions;
 export default authSlice.reducer;
