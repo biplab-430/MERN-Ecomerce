@@ -1,19 +1,20 @@
 # 🛒 MERN E-Commerce Platform
 
-A production-ready, full-stack e-commerce application built with the **MERN Stack** following a **Monolithic Architecture**. Designed with clean MVC structure, secure authentication, and optimized database queries.
+A full-stack, production-ready **E-Commerce Platform** built with the **MERN Stack** — featuring a complete shopping experience, a powerful admin dashboard, and an **AI-powered chatbot** built with LangChain.js and Cohere AI.
 
-🔗 **Live Demo:** [mern-ecomerce-4.onrender.com](https://mern-ecomerce-4.onrender.com)
+🔗 **Live Demo:** [mern-ecomerce-4.onrender.com](https://mern-ecomerce-4.onrender.com)  
+🔗 **GitHub:** [biplab-430/MERN-Ecomerce](https://github.com/biplab-430/MERN-Ecomerce)
 
 ---
 
 ## 📌 Table of Contents
 
 - [Architecture Overview](#architecture-overview)
-- [System Design](#system-design)
 - [Features](#features)
+- [AI Chatbot Flow](#ai-chatbot-flow)
 - [Tech Stack](#tech-stack)
-- [API Endpoints](#api-endpoints)
 - [Database Schema](#database-schema)
+- [API Endpoints](#api-endpoints)
 - [Getting Started](#getting-started)
 - [Environment Variables](#environment-variables)
 
@@ -21,95 +22,113 @@ A production-ready, full-stack e-commerce application built with the **MERN Stac
 
 ## 🏗️ Architecture Overview
 
-This project follows a **Monolithic Architecture** — all modules (auth, products, orders, cart) live within a single deployable Node.js/Express server, communicating internally via function calls rather than network requests.
-
-> This is intentional for a project of this scope. Monoliths are simpler to develop, test, and deploy — and are the foundation before scaling to microservices.
+This project follows a **Monolithic Architecture** — all modules live within a single deployable Node.js/Express server communicating with a single MongoDB database.
 
 ```mermaid
 graph TD
-    Client["⚛️ React.js Frontend\n(SPA - Vite/CRA)"]
-    Server["🟢 Node.js + Express.js\n(Monolithic Backend)"]
-    
-    AuthModule["🔐 Auth Module\n(JWT + bcrypt)"]
-    ProductModule["📦 Product Module\n(CRUD + Inventory)"]
-    OrderModule["🧾 Order Module\n(Order Processing)"]
-    CartModule["🛒 Cart Module\n(Session Management)"]
-    UserModule["👤 User Module\n(Profile Management)"]
+    Client["⚛️ React Frontend\n(ShadCN UI + Lucide React)"]
+    Server["🟢 Node.js + Express.js\nMonolithic Backend"]
 
-    MongoDB[("🍃 MongoDB\nDatabase")]
+    AuthMod["🔐 Auth Module"]
+    ProductMod["📦 Product Module"]
+    OrderMod["🧾 Order Module"]
+    CartMod["🛒 Cart Module"]
+    UserMod["👤 User Module"]
+    ChatMod["🤖 Chatbot Module\n(LangChain + Cohere AI)"]
+    ContactMod["📩 Contact Module"]
 
-    Client -->|"REST API calls\n(Axios / Fetch)"| Server
-    Server --> AuthModule
-    Server --> ProductModule
-    Server --> OrderModule
-    Server --> CartModule
-    Server --> UserModule
+    MongoDB[("🍃 MongoDB Database")]
 
-    AuthModule --> MongoDB
-    ProductModule --> MongoDB
-    OrderModule --> MongoDB
-    CartModule --> MongoDB
-    UserModule --> MongoDB
-```
+    Client -->|"REST API"| Server
+    Server --> AuthMod
+    Server --> ProductMod
+    Server --> OrderMod
+    Server --> CartMod
+    Server --> UserMod
+    Server --> ChatMod
+    Server --> ContactMod
 
----
-
-## 🔄 System Design
-
-### Request-Response Flow
-
-```mermaid
-sequenceDiagram
-    participant C as React Client
-    participant M as Express Middleware
-    participant A as Auth Guard (JWT)
-    participant R as Route Handler
-    participant DB as MongoDB
-
-    C->>M: HTTP Request
-    M->>A: Verify JWT Token
-    A-->>M: Token Valid / Invalid
-    M->>R: Forward Request
-    R->>DB: Query (Aggregation / CRUD)
-    DB-->>R: Response Data
-    R-->>C: JSON Response
-```
-
-### Authentication Flow
-
-```mermaid
-flowchart LR
-    Register["User Registers"] --> Hash["bcrypt hashes password"]
-    Hash --> Store["Store in MongoDB"]
-    Login["User Logs In"] --> Verify["bcrypt.compare()"]
-    Verify --> JWT["Generate JWT Token"]
-    JWT --> Client["Send to Client"]
-    Client --> Protected["Access Protected Routes\nvia Authorization Header"]
+    AuthMod --> MongoDB
+    ProductMod --> MongoDB
+    OrderMod --> MongoDB
+    CartMod --> MongoDB
+    UserMod --> MongoDB
+    ContactMod --> MongoDB
 ```
 
 ---
 
 ## ✅ Features
 
-### 👤 User
-- Secure registration & login with **JWT authentication**
-- Password hashing using **bcrypt**
-- Role-based access (Admin / User)
+### 🛍️ Shopping View
+- **Home Page** — featured products, banners, categories
+- **Product Listing** — browse all products with filters
+- **Product Details Dialog** — full product info with add to cart
+- **Cart** — add, update quantity, remove items
+- **Checkout** — complete order placement flow
+- **Search Page** — search products by name or category
+- **Review System** — users can leave ratings and reviews
+- **Account Page** — manage profile and view order history
+- **Contact Us Page** — send messages to admin
 
-### 📦 Product
-- Dynamic product listings with filters & search
-- Inventory management (stock tracking)
-- Admin: Create, Update, Delete products
+### 🤖 AI Chatbot (LangChain.js + Cohere AI)
+- Built-in **Help Chatbot** powered by **LangChain.js** and **Cohere AI**
+- Answers product queries, order questions, and support requests
+- Integrated directly into the shopping view UI
+- Context-aware responses using LangChain prompt chaining
 
-### 🛒 Cart & Orders
-- Add to cart, update quantity, remove items
-- End-to-end order processing workflow
-- Order history per user
+### 🔐 Authentication
+- Secure **Sign Up & Sign In** with JWT authentication
+- Password hashing with **bcrypt**
+- Role-based access — **Admin** vs **User**
+- Protected routes on both frontend and backend
 
-### 🔧 Admin
-- Inventory control dashboard
-- Manage all orders and update status
-- User management
+### 🛠️ Admin Dashboard
+- **Products Management** — create, edit, delete products; update prices and discounts
+- **Orders Management** — view all orders; update order status:
+  - 🕐 Pending → ✅ Confirmed → 🚚 Shipping → 📦 Delivered
+- **Users Management** — view all registered users; delete users
+- **Messages** — view all customer contact form submissions
+- **Admin Header + Sidebar** — clean navigation layout
+
+---
+
+## 🤖 AI Chatbot Flow
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant F as React Frontend
+    participant B as Express Backend
+    participant L as LangChain.js
+    participant C as Cohere AI
+
+    U->>F: Types question in chatbot
+    F->>B: POST /api/chat {message}
+    B->>L: Pass message to LangChain pipeline
+    L->>L: Apply prompt template + context
+    L->>C: Send engineered prompt to Cohere AI
+    C-->>L: AI generated response
+    L-->>B: Processed response
+    B-->>F: JSON response
+    F-->>U: Displays chatbot reply
+```
+
+---
+
+## 🔄 Order Status Flow
+
+```mermaid
+flowchart LR
+    P["🕐 Pending"]
+    C["✅ Confirmed"]
+    S["🚚 Shipping"]
+    D["📦 Delivered"]
+
+    P --> C --> S --> D
+```
+
+> Admin can update order status at any stage from the dashboard.
 
 ---
 
@@ -117,51 +136,14 @@ flowchart LR
 
 | Layer | Technology |
 |---|---|
-| Frontend | React.js, Tailwind CSS / Bootstrap |
+| Frontend | React.js, ShadCN UI, Lucide React, Tailwind CSS |
 | Backend | Node.js, Express.js |
 | Database | MongoDB, Mongoose ODM |
-| Auth | JWT (jsonwebtoken), bcrypt |
+| Auth | JWT, bcrypt |
+| AI Chatbot | LangChain.js, Cohere AI |
 | Architecture | Monolithic, MVC Pattern |
 | API Style | RESTful APIs |
 | Deployment | Render |
-
----
-
-## 📡 API Endpoints
-
-### Auth Routes — `/api/auth`
-| Method | Endpoint | Description | Auth Required |
-|---|---|---|---|
-| POST | `/register` | Register new user | ❌ |
-| POST | `/login` | Login & get JWT | ❌ |
-| GET | `/me` | Get current user | ✅ |
-
-### Product Routes — `/api/products`
-| Method | Endpoint | Description | Auth Required |
-|---|---|---|---|
-| GET | `/` | Get all products | ❌ |
-| GET | `/:id` | Get single product | ❌ |
-| POST | `/` | Create product | ✅ Admin |
-| PUT | `/:id` | Update product | ✅ Admin |
-| DELETE | `/:id` | Delete product | ✅ Admin |
-
-### Order Routes — `/api/orders`
-| Method | Endpoint | Description | Auth Required |
-|---|---|---|---|
-| POST | `/` | Create new order | ✅ |
-| GET | `/my-orders` | Get user orders | ✅ |
-| GET | `/` | Get all orders | ✅ Admin |
-| PUT | `/:id/status` | Update order status | ✅ Admin |
-
-### Cart Routes — `/api/cart`
-| Method | Endpoint | Description | Auth Required |
-|---|---|---|---|
-| GET | `/` | Get user cart | ✅ |
-| POST | `/add` | Add item to cart | ✅ |
-| PUT | `/update` | Update cart item | ✅ |
-| DELETE | `/remove/:id` | Remove cart item | ✅ |
-
-> Total: **15+ RESTful API endpoints** covering user management, inventory control, and payment workflows.
 
 ---
 
@@ -183,6 +165,7 @@ erDiagram
         string name
         string description
         number price
+        number discount
         number stock
         string category
         string imageUrl
@@ -204,11 +187,89 @@ erDiagram
         number totalPrice
     }
 
+    REVIEW {
+        ObjectId _id
+        ObjectId userId
+        ObjectId productId
+        number rating
+        string comment
+        date createdAt
+    }
+
+    MESSAGE {
+        ObjectId _id
+        string name
+        string email
+        string message
+        date createdAt
+    }
+
     USER ||--o{ ORDER : "places"
     USER ||--|| CART : "has"
+    USER ||--o{ REVIEW : "writes"
     ORDER }o--|| PRODUCT : "contains"
     CART }o--|| PRODUCT : "references"
+    PRODUCT ||--o{ REVIEW : "receives"
 ```
+
+---
+
+## 📡 API Endpoints
+
+### Auth — `/api/auth`
+| Method | Endpoint | Description | Auth |
+|---|---|---|---|
+| POST | `/register` | Register new user | ❌ |
+| POST | `/login` | Login + JWT | ❌ |
+| GET | `/me` | Get current user | ✅ |
+
+### Products — `/api/products`
+| Method | Endpoint | Description | Auth |
+|---|---|---|---|
+| GET | `/` | Get all products | ❌ |
+| GET | `/:id` | Get product details | ❌ |
+| POST | `/` | Create product | ✅ Admin |
+| PUT | `/:id` | Update product / price / discount | ✅ Admin |
+| DELETE | `/:id` | Delete product | ✅ Admin |
+
+### Orders — `/api/orders`
+| Method | Endpoint | Description | Auth |
+|---|---|---|---|
+| POST | `/` | Place new order | ✅ |
+| GET | `/my-orders` | Get user orders | ✅ |
+| GET | `/` | Get all orders | ✅ Admin |
+| PUT | `/:id/status` | Update order status | ✅ Admin |
+
+### Users — `/api/users`
+| Method | Endpoint | Description | Auth |
+|---|---|---|---|
+| GET | `/` | Get all users | ✅ Admin |
+| DELETE | `/:id` | Delete user | ✅ Admin |
+
+### Cart — `/api/cart`
+| Method | Endpoint | Description | Auth |
+|---|---|---|---|
+| GET | `/` | Get user cart | ✅ |
+| POST | `/add` | Add to cart | ✅ |
+| PUT | `/update` | Update quantity | ✅ |
+| DELETE | `/remove/:id` | Remove item | ✅ |
+
+### Reviews — `/api/reviews`
+| Method | Endpoint | Description | Auth |
+|---|---|---|---|
+| POST | `/:productId` | Add review | ✅ |
+| GET | `/:productId` | Get product reviews | ❌ |
+
+### Chat — `/api/chat`
+| Method | Endpoint | Description | Auth |
+|---|---|---|---|
+| POST | `/` | Send message to AI chatbot | ✅ |
+
+### Contact — `/api/contact`
+| Method | Endpoint | Description | Auth |
+|---|---|---|---|
+| POST | `/` | Submit contact message | ❌ |
+| GET | `/` | View all messages | ✅ Admin |
 
 ---
 
@@ -216,13 +277,12 @@ erDiagram
 
 ### Prerequisites
 - Node.js v18+
-- MongoDB Atlas account or local MongoDB
-- npm or yarn
+- MongoDB Atlas account
+- Cohere AI API key
 
 ### Clone & Install
 
 ```bash
-# Clone the repository
 git clone https://github.com/biplab-430/MERN-Ecomerce.git
 cd MERN-Ecomerce
 
@@ -238,10 +298,10 @@ npm install
 ### Run the App
 
 ```bash
-# Run backend (from /server)
+# Backend (from /server)
 npm run dev
 
-# Run frontend (from /client)
+# Frontend (from /client)
 npm start
 ```
 
@@ -249,13 +309,14 @@ npm start
 
 ## 🔑 Environment Variables
 
-Create a `.env` file in the `/server` directory:
+Create `.env` in `/server`:
 
 ```env
 PORT=5000
 MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret_key
+JWT_SECRET=your_jwt_secret
 JWT_EXPIRES_IN=7d
+COHERE_API_KEY=your_cohere_api_key
 NODE_ENV=development
 ```
 
@@ -263,17 +324,13 @@ NODE_ENV=development
 
 ## 💡 Why Monolithic Architecture?
 
-This project deliberately uses a **Monolithic Architecture** for the following reasons:
-
 | Factor | Monolith (This Project) | Microservices |
 |---|---|---|
 | Complexity | Low — single deployable unit | High — multiple services |
 | Development Speed | Fast | Slower (infra overhead) |
-| Best For | Small-medium apps | Large-scale distributed systems |
-| Debugging | Easier — single log stream | Harder — distributed tracing needed |
-| Deployment | Single Render instance | Multiple containers / Kubernetes |
-
-> I have also built a separate **Job Portal project** using Microservices + Kafka + Redis to understand the contrast and tradeoffs at scale.
+| Debugging | Easy — single log stream | Harder — distributed tracing |
+| Best For | Full-featured SaaS apps | Large-scale distributed systems |
+| Deployment | Single Render instance | Multiple containers |
 
 ---
 
